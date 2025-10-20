@@ -3,7 +3,7 @@ inputfolder = getDirectory("Select a directory containing the raw files");
 outputfolder = getDirectory("Select a directory to store the results");
 
 // Input settings
-Dialog.create("ClusterGazer2D settings");
+Dialog.create("ClusterGazer 2D v1.0.0-alpha");
   Dialog.addMessage("Input settings for ClusterGazer 2D");
   
   Dialog.addMessage("---------- Set channel number to match content ---------");

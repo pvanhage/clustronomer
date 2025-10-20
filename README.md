@@ -9,7 +9,7 @@ Analysis scripts for the quantification and analyses of intracellular clusters d
 Currently, the following scripts are available: 
 
 +  [ClusterGazer2D.ijm](ClusterGazer2D.ijm) : The 2D version of ClusterGazer using standard ImageJ scripting functions
-+  [ClusterGazer3D.ijm](ClusterGazer3D.ijm) : The 2D version of ClusterGazer based on 3D imagej suite
++  [ClusterGazer3D.ijm](ClusterGazer3D.ijm) : The 3D version of ClusterGazer based on 3D imagej suite
 +  [SeriesSplitter.ijm](SeriesSplitter.ijm) : A simple image series segmentation macro to split off individual TIFF files
 
 ## ClusterGazer 2D/3D
@@ -75,11 +75,11 @@ rename("dummy_cluster");
 
 ## Example
 
-The goal of this example is to quantify protein association with bacterial clusters
+The goal of this example is to quantify protein association with bacterial clusters imaged using confocal microscopy
 
-- Three example TIFF images are found in the Example folder
-- Download the images and unzip them
-- The example images are confocal Z-stacks consisting of 5 channels
+- Three example TIFF images are found in the `Example image set` folder
+- Download the the images and unzip them
+- Example images consist confocal Z-stacks consisting of 5 channels
 
 ```
 Channel 1: Nuclei channel
