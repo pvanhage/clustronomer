@@ -1,3 +1,9 @@
+// MIT License
+// Copyright (c) 2025 Patrick van Hage
+//
+// This script is licensed under the MIT License.
+// See the LICENSE file in the repository root for details.
+
 // Get file extension
 Dialog.create("SerieSplitter v1.0.0-alpha");
 	
