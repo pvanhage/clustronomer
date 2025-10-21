@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+message: "If you use these ImageJ macros in your research, please cite the following work:"
+authors:
+  - family-names: van Hage
+    given-names: Patrick
+    orcid: https://orcid.org/0000-0003-0814-1505
+title: "Clustronomer: Ready-to-go ImageJ Macros and analyses scripts to track and quantify fluorescent content of intracellular clusters"
+version: v1.0.0
+date-released: 2025-10-20
+url: https://github.com/pvanhage/Clustronomer

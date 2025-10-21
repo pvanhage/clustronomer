@@ -1,3 +1,9 @@
+// MIT License
+// Copyright (c) 2025 Patrick van Hage
+//
+// This script is licensed under the MIT License.
+// See the LICENSE file in the repository root for details.
+
 // Input directories
 inputfolder = getDirectory("Select a directory containing the raw files");
 outputfolder = getDirectory("Select a directory to store the results");

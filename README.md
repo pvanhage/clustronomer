@@ -1,9 +1,9 @@
 # Clustronomer
 
-Analysis scripts for the quantification and analyses of intracellular clusters derived from fluorescence microscopy images
+Scripts for the quantification and analyses of intracellular clusters derived from fluorescence microscopy images
 
 - Clusters can range from fluorescently labelled microbes to intracellular compartments or protein spots
-- ClusterGazer 2D/3D provides an out-of-the-box ImageJ macro that can handle standard processing and quantification
+- ClusterGazer 2D/3D provides an out-of-the-box ImageJ Macro script for image processing and quantification
 - Quantification and analyses scripts are structured to easily accommodate additional tools or processing steps
 
 Currently, the following scripts are available: 
@@ -14,25 +14,29 @@ Currently, the following scripts are available:
 
 ## ClusterGazer 2D/3D
 
-ImageJ macro for simple semi-automated batch quantification of intracellular clusters from fluorescence microscopy images
+ImageJ Macros for semi-automated batch quantification of intracellular clusters from fluorescence microscopy images
 
 - Semi-automated thresholding and segmentation of cells, clusters, and protein foci
 - Quantifies location, protein intensity, and fraction overlap between objects
 - Thresholds can be set per image or fixed for the entire range of images 
 - Pre-processing steps kept to a minimum to flexibly extend to user needs
+- Output as a single CSV table for downstream analysis
+
+Designed to handle Fiji Hyperstack format
+
 - Z-stacks are merged by maximum Z-projection (ClusterGazer2D) 
 - Alternatively, can perform 3D object quantification (ClusterGazer3D)
 - Performs per frame quantification for image timeseries
-- Output as a single CSV table for downstream analysis
 
-## Requirements
+## Installation and requirements
 
-- Up-to-date Fiji / ImageJ
-- Operates on individual TIFF files
-- Image collections can be split using SeriesSplitter
+- [Fiji (ImageJ)](https://imagej.net/software/fiji/)
+- Operates on individual TIFF files within a given folder
+- Image collections can be split using [SeriesSplitter.ijm](SeriesSplitter.ijm)
 - ImageJ 3D suite (only required for ClusterGazer3D)
+	- Fiji → Help → Update... → Manage update sites	→ Enable **3D ImageJ Suite** → Apply changes
 
-## How to use
+## Quick start guide
 
 Optional: Separate image series into single TIFF files using SeriesSplitter
 
@@ -49,14 +53,14 @@ Batch processing with ClusterGazer
 5. Channels are automatically pre-processed, and subject to user-defined thresholds
 7. Results will be saved as a single CSV
 
-## Additional notes 
+### Additional notes 
 
 - Checking guided mode will give a demonstration of quantified regions of interest (ROIs)
-- The script will duplicate channels for each object to perform object-specific pre-processing and measurements
+- The script will duplicate channels for each object to perform object-specific pre-processing and quantification
 - By setting the cluster channel for protein, intensity measures are performed only on the clusters
-- Can easily merge cluster measurements from runs with different protein channels by using the same cluster settings
+- Cluster objects line up when running the script on different protein channels given consistent cluster settings
 
-## Modify object-specific processing steps
+### Modify object-specific processing steps
 
 - The pre-processing steps can be modified using standard macro functions
 - Use Plugins → Macros → Record... to track pre-processing steps
@@ -73,12 +77,12 @@ selectWindow("new_image");
 rename("dummy_cluster");
 ```
 
-## Example
+### Example
 
-The goal of this example is to quantify protein association with bacterial clusters imaged using confocal microscopy
+An example of quantifying protein content from bacterial clusters imaged using confocal microscopy
 
-- Three example TIFF images are found in the `Example image set` folder
-- Download the the images and unzip them
+- Three example TIFF images are found in the `Demo image set` folder
+- Download the images and unzip them in a folder 
 - Example images consist confocal Z-stacks consisting of 5 channels
 
 ```
@@ -106,6 +110,14 @@ In addition, the images provide nuclei and cell channels to include for quantifi
 - Similar to the clusters, their protein content will also be quantified
 
 Lastly, guided mode can be checked to demonstrate the quantifiable regions of the first image
+
+## 📖 Citation
+
+If you use these ImageJ macros in your research, please cite the repository using the information in the [CITATION.cff](./CITATION.cff) file or by clicking the "Cite this repository" button on the GitHub sidebar.
+
+Example citation:
+
+> van Hage, Patrick. (2025). *Clustronomer: Ready-to-go ImageJ Macros and analyses scripts to track and quantify fluorescent content of intracellular clusters*. GitHub. https://github.com/pvanhage/Clustronomer
 
 ## Contributions
 

@@ -1,3 +1,9 @@
+// MIT License
+// Copyright (c) 2025 Patrick van Hage
+//
+// This script is licensed under the MIT License.
+// See the LICENSE file in the repository root for details.
+
 // Input directories
 inputfolder = getDirectory("Select a directory containing the raw files");
 outputfolder = getDirectory("Select a directory to store the results");
@@ -92,7 +98,7 @@ if(quant_nucl) {
   	Dialog.addMessage("Filter to smooth image for thresholding");
   	Dialog.addNumber("Gaussian blur (micron)", 0.5);
   	Dialog.addCheckbox("Segment nuclei", true);
-	Dialog.addCheckbox("Voronoi segmentation (slow)", true);
+	Dialog.addCheckbox("Voronoi segmentation (slow)", false);
   
   	Dialog.show();
   
@@ -541,7 +547,7 @@ for (l = 0; l < lengthOf(file_names); l++) {
 			Stack.setFrame(t);
 			run("Duplicate...", "title=cluster_intensities duplicate frames=" + t);
 			Ext.Manager3D_Select(0);
-			waitForUser("Example of cluster ROIs. \nPress OK to continue.");
+			waitForUser("Example of cluster ROIs. \nTurn off Live ROI and deselect before you continue. \nPress OK to continue.");
 			
 			selectWindow("cluster_intensities");
 			close();
@@ -565,7 +571,7 @@ for (l = 0; l < lengthOf(file_names); l++) {
 			
 			selectWindow("protein_intensities_t" + t);
 			Ext.Manager3D_Select(0);
-			waitForUser("Example of protein intensities measured by cluster ROIs. \nPress OK to continue.");
+			waitForUser("Example of protein intensities measured by cluster ROIs. \nTurn off Live ROI and deselect before you continue. \nPress OK to continue.");
 			
 		}
 		
@@ -662,7 +668,7 @@ for (l = 0; l < lengthOf(file_names); l++) {
 				Stack.setFrame(t);
 				run("Duplicate...", "title=marker_intensities duplicate frames=" + t);
 				Ext.Manager3D_Select(0);
-				waitForUser("Example of cell ROIs. \nPress OK to continue.");
+				waitForUser("Example of cell ROIs. \nTurn off Live ROI and deselect before you continue. \nPress OK to continue.");
 				
 				selectWindow("marker_intensities");
 				close();		
