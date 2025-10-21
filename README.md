@@ -8,9 +8,9 @@ Scripts for the quantification and analyses of intracellular clusters derived fr
 
 Currently, the following scripts are available: 
 
-+  [ClusterGazer2D.ijm](ClusterGazer2D.ijm) : The 2D version of ClusterGazer using standard ImageJ scripting functions
-+  [ClusterGazer3D.ijm](ClusterGazer3D.ijm) : The 3D version of ClusterGazer based on 3D imagej suite
-+  [SeriesSplitter.ijm](SeriesSplitter.ijm) : A simple image series segmentation macro to split off individual TIFF files
++  [clustergazer2d.ijm](clustergazer2d.ijm) : The 2D version of ClusterGazer using standard ImageJ scripting functions
++  [clustergazer3d.ijm](clustergazer3d.ijm) : The 3D version of ClusterGazer based on 3D imagej suite
++  [seriesplitter.ijm](seriesplitter.ijm) : A simple image series segmentation macro to split off individual TIFF files
 
 ## ClusterGazer 2D/3D
 
@@ -32,13 +32,13 @@ Designed to handle Fiji Hyperstack format
 
 - [Fiji (ImageJ)](https://imagej.net/software/fiji/)
 - Operates on individual TIFF files within a given folder
-- Image collections can be split using [SeriesSplitter.ijm](SeriesSplitter.ijm)
+- Image collections can be split using [seriesplitter.ijm](seriesplitter.ijm)
 - ImageJ 3D suite (only required for ClusterGazer3D)
 	- Fiji → Help → Update... → Manage update sites	→ Enable **3D ImageJ Suite** → Apply changes
 
 ## Quick start guide
 
-Optional: Separate image series into single TIFF files using SeriesSplitter
+Optional: Separate image series into single TIFF files using SerieSplitter
 
 1. Open the macro in Fiji → Run
 2. Select folder consisting of image series
@@ -81,7 +81,7 @@ rename("dummy_cluster");
 
 An example of quantifying protein content from bacterial clusters imaged using confocal microscopy
 
-- Three example TIFF images are found in the `Demo image set` folder
+- Three example TIFF images are found in the `demo-image-set` folder
 - Download the images and unzip them in a folder 
 - Example images consist confocal Z-stacks consisting of 5 channels
 

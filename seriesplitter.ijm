@@ -1,5 +1,5 @@
 // Get file extension
-Dialog.create("SeriesSplitter v1.0.0-alpha");
+Dialog.create("SerieSplitter v1.0.0-alpha");
 	
 	Dialog.addMessage("Separate image series into TIFF files");
 	
