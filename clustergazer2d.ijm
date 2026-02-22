@@ -9,7 +9,7 @@ inputfolder = getDirectory("Select a directory containing the raw files");
 outputfolder = getDirectory("Select a directory to store the results");
 
 // Input settings
-Dialog.create("ClusterGazer 2D v1.0.0-alpha");
+Dialog.create("ClusterGazer 2D v1.0.1-alpha");
   Dialog.addMessage("Input settings for ClusterGazer 2D");
   
   Dialog.addMessage("---------- Set channel number to match content ---------");
@@ -21,6 +21,7 @@ Dialog.create("ClusterGazer 2D v1.0.0-alpha");
   Dialog.addNumber("Minimum cluster size", 10);
   Dialog.addChoice("Units", newArray("pixel", "micron^2"));
   Dialog.addNumber("Enlarge ROI (µm)", 0);
+  Dialog.addNumber("Create band (µm)", 0);
   Dialog.addCheckbox("Watershed segment clusters", true);
   Dialog.addCheckbox("Remove extracellular clusters (whole-cell marker)", false);
   
@@ -48,6 +49,7 @@ Dialog.create("ClusterGazer 2D v1.0.0-alpha");
   size_cluster = Dialog.getNumber();
   unit_cluster = Dialog.getChoice();
   roi_enlarge = Dialog.getNumber();
+  roi_band = Dialog.getNumber();
   split_cluster = Dialog.getCheckbox();
   remove_cluster = Dialog.getCheckbox();
   
@@ -425,11 +427,11 @@ for (l = 0; l < lengthOf(file_names); l++) {
 			for(n = 0; n < n_cluster; n++) {
 				
 				roiManager("Select", n);
-		    	run("Enlarge...", "enlarge=" + roi_enlarge);
+				run("Enlarge...", "enlarge=" + roi_enlarge);
 		    	roiManager("Update");
 		    	
 		    	selectWindow("C" + c_prot + "-" + image_title);
-				Stack.setFrame(t);
+		    	Stack.setFrame(t);
 		    	
 		    	roiManager("Select", n);
 		    	run("Measure");
@@ -440,6 +442,7 @@ for (l = 0; l < lengthOf(file_names); l++) {
 				Table.set("Type", obj_ind, "Cluster");
 		    	
 		    	obj_ind = obj_ind + 1;
+				
 			}
 			
 			if(guide_check & (l == 0) & (t == 1)) {
@@ -452,6 +455,8 @@ for (l = 0; l < lengthOf(file_names); l++) {
 			
 			// Protein fraction of cluster ROI covered 
 			selectWindow("Mask of dummy_prot");
+			n_bit_mask = bitDepth(); 
+			max_greyval_mask =  pow(2, n_bit_mask) - 1;
 			
 			for(n = 0; n < n_cluster; n++) {
 				
@@ -459,7 +464,7 @@ for (l = 0; l < lengthOf(file_names); l++) {
 				roiManager("Select", n);
 				List.setMeasurements();
 				prot_frac_bit = List.getValue("Mean");
-		    	prot_frac = (prot_frac_bit / max_greyval);
+		    	prot_frac = (prot_frac_bit / max_greyval_mask);
 		    	
 		    	Table.set("FractionProtein", obj_ind_frac, prot_frac);
 		    	Table.set("FractionCluster", obj_ind_frac, 1);
@@ -476,6 +481,57 @@ for (l = 0; l < lengthOf(file_names); l++) {
 				selectWindow("Mask of dummy_prot");
 				roiManager("Show All without labels");
 				waitForUser("Example of thresholded protein punctae overlap with cluster ROIs. \nPress OK to continue.");
+			}
+			
+			// Create cluster band and measure
+			if(roi_band > 0) {
+					
+				selectWindow("C" + c_prot + "-" + image_title);
+				Stack.setFrame(t)
+					
+				for(n = 0; n < n_cluster; n++) {
+					
+					roiManager("Select", n);
+					run("Make Band...", "band=" + roi_band);
+					roiManager("Update");
+						
+					selectWindow("C" + c_prot + "-" + image_title);
+					Stack.setFrame(t);
+			    	
+			    	roiManager("Select", n);
+			    	run("Measure");
+			    		
+			    	Table.set("Label", obj_ind, file_names[l]);
+			    	Table.set("Frame", obj_ind, t);
+			    	Table.set("ID", obj_ind, (n + 1));
+			    	Table.set("Type", obj_ind, "Band");
+			    		
+			    	obj_ind = obj_ind + 1;
+				}
+				
+				selectWindow("Mask of dummy_prot");
+				n_bit_mask = bitDepth(); 
+				max_greyval_mask =  pow(2, n_bit_mask) - 1;
+			
+				for(n = 0; n < n_cluster; n++) {
+						
+					selectWindow("Mask of dummy_prot");
+					roiManager("Select", n);
+					List.setMeasurements();
+					prot_frac_bit = List.getValue("Mean");
+				    prot_frac = (prot_frac_bit / max_greyval_mask);
+				    	
+				    Table.set("FractionProtein", obj_ind_frac, prot_frac);
+				    Table.set("FractionCluster", obj_ind_frac, 1);
+				    Table.set("MinThreshObject", obj_ind_frac, MinThresh_cluster);
+					Table.set("MaxThreshObject", obj_ind_frac, MaxThresh_cluster);
+					Table.set("MinThreshProtein", obj_ind_frac, MinThresh_prot);
+					Table.set("MaxThreshProtein", obj_ind_frac, MaxThresh_prot);
+				    	
+				    obj_ind_frac = obj_ind_frac + 1;
+				}
+				
+				
 			}
 			
 			roiManager("Deselect");
@@ -526,6 +582,8 @@ for (l = 0; l < lengthOf(file_names); l++) {
 				
 				// Fraction of cell covered by protein
 				selectWindow("Mask of dummy_prot");
+				n_bit_mask = bitDepth(); 
+				max_greyval_mask =  pow(2, n_bit_mask) - 1;
 				
 				for(n = 0; n < n_cell; n++) {
 					
@@ -533,7 +591,7 @@ for (l = 0; l < lengthOf(file_names); l++) {
 					roiManager("Select", n);
 					List.setMeasurements();
 					prot_frac_bit = List.getValue("Mean");
-			    	prot_frac = (prot_frac_bit / max_greyval);
+			    	prot_frac = (prot_frac_bit / max_greyval_mask);
 			    	
 			    	Table.set("FractionProtein", obj_ind_frac, prot_frac);
 			    	Table.set("MinThreshObject", obj_ind_frac, MinThresh_marker);
@@ -547,14 +605,16 @@ for (l = 0; l < lengthOf(file_names); l++) {
 				// Fraction of cell covered by cluster
 				obj_ind_frac = obj_ind_frac - n_cell;
 				selectWindow("Mask of dummy_cluster");
-					
+				n_bit_mask = bitDepth(); 
+				max_greyval_mask =  pow(2, n_bit_mask) - 1;
+				
 				for(n = 0; n < n_cell; n++) {
 					
 					selectWindow("Mask of dummy_cluster");
 					roiManager("Select", n);
 					List.setMeasurements();
 					cluster_frac_bit = List.getValue("Mean");
-			    	cluster_frac = (cluster_frac_bit / max_greyval);
+			    	cluster_frac = (cluster_frac_bit / max_greyval_mask);
 			    	
 			    	Table.set("FractionCluster", obj_ind_frac, cluster_frac);
 			    	
@@ -602,6 +662,8 @@ for (l = 0; l < lengthOf(file_names); l++) {
 				
 				// Fraction of nucleus covered by protein
 				selectWindow("Mask of dummy_prot");
+				n_bit_mask = bitDepth(); 
+				max_greyval_mask =  pow(2, n_bit_mask) - 1;
 				
 				for(n = 0; n < n_nucl; n++) {
 					
@@ -609,7 +671,7 @@ for (l = 0; l < lengthOf(file_names); l++) {
 					roiManager("Select", n);
 					List.setMeasurements();
 					prot_frac_bit = List.getValue("Mean");
-			    	prot_frac = (prot_frac_bit / max_greyval);
+			    	prot_frac = (prot_frac_bit / max_greyval_mask);
 			    	
 			    	Table.set("FractionProtein", obj_ind_frac, prot_frac);
 			    	Table.set("MinThreshObject", obj_ind_frac, MinThresh_nucl);
@@ -623,6 +685,8 @@ for (l = 0; l < lengthOf(file_names); l++) {
 				// Fraction of nuclei covered by cluster
 				obj_ind_frac = obj_ind_frac - n_nucl;
 				selectWindow("Mask of dummy_cluster");
+				n_bit_mask = bitDepth(); 
+				max_greyval_mask =  pow(2, n_bit_mask) - 1;	
 					
 				for(n = 0; n < n_nucl; n++) {
 					
@@ -630,7 +694,7 @@ for (l = 0; l < lengthOf(file_names); l++) {
 					roiManager("Select", n);
 					List.setMeasurements();
 					cluster_frac_bit = List.getValue("Mean");
-			    	cluster_frac = (cluster_frac_bit / max_greyval);
+			    	cluster_frac = (cluster_frac_bit / max_greyval_mask);
 			    	
 			    	Table.set("FractionCluster", obj_ind_frac, cluster_frac);
 			    	
@@ -681,6 +745,8 @@ for (l = 0; l < lengthOf(file_names); l++) {
 					
 					// Fraction of Voronoi area covered by protein
 					selectWindow("Mask of dummy_prot");
+					n_bit_mask = bitDepth(); 
+					max_greyval_mask =  pow(2, n_bit_mask) - 1;
 					
 					for(n = 0; n < n_voronoi; n++) {
 						
@@ -688,7 +754,7 @@ for (l = 0; l < lengthOf(file_names); l++) {
 						roiManager("Select", n);
 						List.setMeasurements();
 						prot_frac_bit = List.getValue("Mean");
-				    	prot_frac = (prot_frac_bit / max_greyval);
+				    	prot_frac = (prot_frac_bit / max_greyval_mask);
 				    	
 				    	Table.set("FractionProtein", obj_ind_frac, prot_frac);
 				    	Table.set("MinThreshObject", obj_ind_frac, MinThresh_nucl);
@@ -702,14 +768,16 @@ for (l = 0; l < lengthOf(file_names); l++) {
 					// Fraction of Voronoi area covered by cluster
 					obj_ind_frac = obj_ind_frac - n_voronoi;
 					selectWindow("Mask of dummy_cluster");
-						
+					n_bit_mask = bitDepth(); 
+					max_greyval_mask =  pow(2, n_bit_mask) - 1;
+					
 					for(n = 0; n < n_voronoi; n++) {
 						
 						selectWindow("Mask of dummy_cluster");
 						roiManager("Select", n);
 						List.setMeasurements();
 						cluster_frac_bit = List.getValue("Mean");
-				    	cluster_frac = (cluster_frac_bit / max_greyval);
+				    	cluster_frac = (cluster_frac_bit / max_greyval_mask);
 				    	
 				    	Table.set("FractionCluster", obj_ind_frac, cluster_frac);
 				    	
@@ -762,14 +830,16 @@ for (l = 0; l < lengthOf(file_names); l++) {
 				
 				// Fraction of protein foci covered by cluster
 				selectWindow("Mask of dummy_cluster");
-					
+				n_bit_mask = bitDepth(); 
+				max_greyval_mask =  pow(2, n_bit_mask) - 1;
+				
 				for(n = 0; n < n_prot; n++) {
 					
 					selectWindow("Mask of dummy_cluster");
 					roiManager("Select", n);
 					List.setMeasurements();
 					cluster_frac_bit = List.getValue("Mean");
-			    	cluster_frac = (cluster_frac_bit / max_greyval);
+			    	cluster_frac = (cluster_frac_bit / max_greyval_mask);
 			    	
 			    	Table.set("FractionProtein", obj_ind_frac, 1);
 			    	Table.set("FractionCluster", obj_ind_frac, cluster_frac);
