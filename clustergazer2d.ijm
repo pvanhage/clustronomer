@@ -9,7 +9,7 @@ inputfolder = getDirectory("Select a directory containing the raw files");
 outputfolder = getDirectory("Select a directory to store the results");
 
 // Input settings
-Dialog.create("ClusterGazer 2D v1.0.1-alpha");
+Dialog.create("ClusterGazer 2D v1.0.2-alpha");
   Dialog.addMessage("Input settings for ClusterGazer 2D");
   
   Dialog.addMessage("---------- Set channel number to match content ---------");
@@ -796,6 +796,7 @@ for (l = 0; l < lengthOf(file_names); l++) {
 		if(quant_prot) {
 			
 			selectWindow("Mask of dummy_prot");
+			run("Select None");
 			run("Analyze Particles...", "add");
 			n_prot = roiManager("count");
 					
