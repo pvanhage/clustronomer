@@ -138,7 +138,7 @@ for (l = 0; l < lengthOf(file_names); l++) {
 	getVoxelSize(vox_width, vox_height, vox_depth, vox_unit);
 	n_bit = bitDepth(); 
 	max_greyval =  pow(2, n_bit) - 1;
-	run("Set Measurements...", "area mean standard min centroid integrated median display redirect=None decimal=9");
+	run("Set Measurements...", "area mean standard min centroid integrated median shape display redirect=None decimal=9");
 	run("Options...", "iterations=1 count=1");
 
 	// Convert units whole-cell marker 
