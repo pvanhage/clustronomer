@@ -124,4 +124,5 @@ Example citation:
 | Name                                                         | Affiliation                           |
 | ------------------------------------------------------------ | ------------------------------------- | 
 | [Patrick van Hage](https://github.com/pvanhage/)  | Institute of Biology Leiden (IBL) | 
+| [Magnus Palmblad](https://cpm.lumc.nl/research/bioinformatics-224/magnus-palmblad-5) |Center for Proteomics and Metabolomics (CPM) |
 | [Annemarie Meijer](https://www.universiteitleiden.nl/en/staffmembers/annemarie-meijer) |Institute of Biology Leiden (IBL) |
