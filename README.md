@@ -1,6 +1,6 @@
 # Clustronomer
 
-Scripts for the quantification and analyses of intracellular clusters derived from fluorescence microscopy images
+This repository contains scripts for the quantification and analyses of intracellular clusters derived from fluorescence microscopy images.
 
 - Clusters can range from fluorescently labelled microbes to intracellular compartments or protein spots
 - ClusterGazer 2D/3D provides an out-of-the-box ImageJ Macro script for image processing and quantification
@@ -9,7 +9,7 @@ Scripts for the quantification and analyses of intracellular clusters derived fr
 Currently, the following scripts are available: 
 
 +  [clustergazer2d.ijm](clustergazer2d.ijm) : The 2D version of ClusterGazer using standard ImageJ scripting functions
-+  [clustergazer3d.ijm](clustergazer3d.ijm) : The 3D version of ClusterGazer based on 3D imagej suite
++  [clustergazer3d.ijm](clustergazer3d.ijm) : The 3D version of ClusterGazer based on 3D ImageJ Suite
 +  [seriesplitter.ijm](seriesplitter.ijm) : A simple image series segmentation macro to split off individual TIFF files
 
 ## ClusterGazer 2D/3D
@@ -33,7 +33,7 @@ Designed to handle Fiji Hyperstack format
 - [Fiji (ImageJ)](https://imagej.net/software/fiji/)
 - Operates on individual TIFF files within a given folder
 - Image collections can be split using [seriesplitter.ijm](seriesplitter.ijm)
-- ImageJ 3D suite (only required for ClusterGazer3D)
+- ImageJ 3D Suite (only required for ClusterGazer3D)
 	- Fiji → Help → Update... → Manage update sites	→ Enable **3D ImageJ Suite** → Apply changes
 
 ## Quick start guide
@@ -51,7 +51,7 @@ Batch processing with ClusterGazer
 3. Select folder for the output file
 4. Follow prompts to choose channels and settings
 5. Channels are automatically pre-processed, and subject to user-defined thresholds
-7. Results will be saved as a single CSV
+7. Results will be saved as a single CSV file
 
 ### Additional notes 
 
