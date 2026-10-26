@@ -2,7 +2,7 @@
 
 This repository contains scripts for the quantification and analyses of intracellular clusters derived from fluorescence microscopy images.
 
-- Clusters can range from fluorescently labelled microbes to intracellular compartments or protein spots
+- Clusters can range from fluorescently labelled microbes to intracellular compartments or signal spots
 - ClusterGazer 2D/3D provides an out-of-the-box ImageJ Macro script for image processing and quantification
 - Quantification and analyses scripts are structured to easily accommodate additional tools or processing steps
 
@@ -16,8 +16,8 @@ Currently, the following scripts are available:
 
 ImageJ Macros for semi-automated batch quantification of intracellular clusters from fluorescence microscopy images
 
-- Semi-automated thresholding and segmentation of cells, clusters, and protein foci
-- Quantifies location, protein intensity, and fraction overlap between objects
+- Semi-automated thresholding and segmentation of cells, clusters, and signal foci
+- Quantifies location, signal intensity, and fraction overlap between objects
 - Thresholds can be set per image or fixed for the entire range of images 
 - Pre-processing steps kept to a minimum to flexibly extend to user needs
 - Output as a single CSV table for downstream analysis
@@ -57,15 +57,15 @@ Batch processing with ClusterGazer
 
 - Checking guided mode will give a demonstration of quantified regions of interest (ROIs)
 - The script will duplicate channels for each object to perform object-specific pre-processing and quantification
-- By setting the cluster channel for protein, intensity measures are performed only on the clusters
-- Cluster objects line up when running the script on different protein channels given consistent cluster settings
+- By setting the cluster channel for signal, intensity measures are performed only on the clusters
+- Cluster objects line up when running the script on different signal channels given consistent cluster settings
 
 ### Modify object-specific processing steps
 
 - The pre-processing steps can be modified using standard macro functions
 - Use Plugins → Macros → Record... to track pre-processing steps
 - Use Ctrl/Cmd + F in the clusterGazer script editor to search for "// Insert [object]"
-- The [object] can consist of "protein", "cluster", "cell", or "nuclei"
+- The [object] can consist of "signal", "cluster", "cell", or "nuclei"
 - Paste your desired functions within the channel pre-processing chunk
 - Note that all pre-processing operations are made on a "dummy_" image
 - If any functions generates a new image, close the old one and rename the new one:
@@ -79,7 +79,7 @@ rename("dummy_cluster");
 
 ### Example
 
-An example of quantifying protein content from bacterial clusters imaged using confocal microscopy
+An example of quantifying signal content from bacterial clusters imaged using confocal microscopy
 
 - Three example TIFF images are found in the `demo-image-set` folder
 - Download the images and unzip them in a folder 
@@ -87,19 +87,19 @@ An example of quantifying protein content from bacterial clusters imaged using c
 
 ```
 Channel 1: Nuclei channel
-Channel 2: A vacuolar protein of interest
+Channel 2: A vacuolar signal of interest
 Channel 3: Transmission light 
 Channel 4: Bacterial infection 
 Channel 5: Cell background fluorescence
 ```
 
 1. Select the folder with the images and the output folder
-2. Set cluster channel to 4 and protein channel to 3
+2. Set cluster channel to 4 and signal channel to 3
 3. The remainder of the settings can be left default 
 4. A window will open to set the threshold for clusters (move top slider)
-5. Another window will open to set threshold for protein spots
+5. Another window will open to set threshold for signal spots
 6. After that, the same thresholds will be applied to all 3 images
-7. For each image, bacterial clusters are processed and their protein content quantified
+7. For each image, bacterial clusters are processed and their signal content quantified
 8. After finishing, a table will emerge with the quantifications per bacterial cluster
 
 In addition, the images provide nuclei and cell channels to include for quantification
@@ -107,7 +107,7 @@ In addition, the images provide nuclei and cell channels to include for quantifi
 - Once selected from the main menu, these will open a separate menu with their own settings
 - Apart from the channel number, their primary settings can also be left to default
 - Separate threshold windows will emerge for these images to be set
-- Similar to the clusters, their protein content will also be quantified
+- Similar to the clusters, their signal content will also be quantified
 
 Lastly, guided mode can be checked to demonstrate the quantifiable regions of the first image
 

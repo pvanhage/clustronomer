@@ -14,7 +14,7 @@ Dialog.create("ClusterGazer 3D  v1.0.0-alpha");
   
   Dialog.addMessage("---------- Set channel number to match content ----------");
   Dialog.addNumber("Cluster channel", 1);
-  Dialog.addNumber("Protein channel", 2);
+  Dialog.addNumber("Signal channel", 2);
   
   Dialog.addMessage("--------- Choose cluster ROI threshold method --------");
   Dialog.addChoice("Threshold method", newArray("Fixed value", "Set per image"));
@@ -22,16 +22,16 @@ Dialog.create("ClusterGazer 3D  v1.0.0-alpha");
   Dialog.addChoice("Units", newArray("voxel", "micron^3"));
   Dialog.addCheckbox("Remove extracellular cluster (whole-cell marker)", false);
   
-  Dialog.addMessage("------------ Protein detection within cluster ROI ----------");
-  Dialog.addChoice("Protein threshold", newArray("Fixed value", "Set per image"));
-  Dialog.addNumber("Minimum protein size", 0);
+  Dialog.addMessage("------------ Signal detection within cluster ROI ----------");
+  Dialog.addChoice("Signal threshold", newArray("Fixed value", "Set per image"));
+  Dialog.addNumber("Minimum signal foci size", 0);
   Dialog.addChoice("Units", newArray("voxel", "micron^3"));
-  Dialog.addCheckbox("Remove extracellular protein (whole-cell marker)", false);
+  Dialog.addCheckbox("Remove extracellular signal (whole-cell marker)", false);
   
   Dialog.addMessage("------------------------ Quantify cell content -------------------");
   Dialog.addCheckbox("Whole-cell marker", false);
   Dialog.addCheckbox("Nuclei (Voronoi)", false);
-  Dialog.addCheckbox("Protein foci", false);
+  Dialog.addCheckbox("Signal foci", false);
   
   Dialog.addMessage("---------------------- Miscellaneous settings ----------------");
   Dialog.addString("Output file (.csv)", "Results");
@@ -40,28 +40,28 @@ Dialog.create("ClusterGazer 3D  v1.0.0-alpha");
   Dialog.show();
   
   c_cluster = Dialog.getNumber();
-  c_prot = Dialog.getNumber();
+  c_signal = Dialog.getNumber();
   
   t_cluster = Dialog.getChoice();
   size_cluster = Dialog.getNumber();
   unit_cluster = Dialog.getChoice();
   remove_cluster = Dialog.getCheckbox();
   
-  t_prot = Dialog.getChoice();
-  size_prot = Dialog.getNumber();
-  unit_prot = Dialog.getChoice();
-  remove_prot = Dialog.getCheckbox();
+  t_signal = Dialog.getChoice();
+  size_signal = Dialog.getNumber();
+  unit_signal = Dialog.getChoice();
+  remove_signal = Dialog.getCheckbox();
   
   quant_cell = Dialog.getCheckbox();
   quant_nucl = Dialog.getCheckbox();
-  quant_prot = Dialog.getCheckbox();
+  quant_signal = Dialog.getCheckbox();
   
   
   name_result_file = Dialog.getString();
   guide_check = Dialog.getCheckbox();
 
 // Whole-cell enumeration / extracellular cluster removal dialogue
-if(quant_cell | remove_cluster | remove_prot) {
+if(quant_cell | remove_cluster | remove_signal) {
 	
 	Dialog.create("Settings whole-cell marker threshold");
 
@@ -144,7 +144,7 @@ for (l = 0; l < lengthOf(file_names); l++) {
 	run("Split Channels");
 	
 	// Convert units whole-cell marker 
-	if(quant_cell | remove_cluster | remove_prot) {
+	if(quant_cell | remove_cluster | remove_signal) {
 		if (unit_marker == "micron^3") {
 			size_marker_px = size_marker / (vox_width * vox_height * vox_depth);
 			size_marker_px = round(size_marker_px);
@@ -177,18 +177,18 @@ for (l = 0; l < lengthOf(file_names); l++) {
 		size_cluster_mu = size_cluster * (vox_width * vox_height * vox_depth);
 	}
 	
-	// Convert units protein ROI
-	if (unit_prot == "micron^3") {
-		size_prot_px = size_prot / (vox_width * vox_height * vox_depth);
-		size_prot_px = round(size_prot_px);
-		size_prot_mu = size_prot;
+	// Convert units signal ROI
+	if (unit_signal == "micron^3") {
+		size_signal_px = size_signal / (vox_width * vox_height * vox_depth);
+		size_signal_px = round(size_signal_px);
+		size_signal_mu = size_signal;
 	} else {
-		size_prot_px = size_prot;
-		size_prot_mu = size_prot * (vox_width * vox_height * vox_depth);
+		size_signal_px = size_signal;
+		size_signal_mu = size_signal * (vox_width * vox_height * vox_depth);
 	}
 	
 	// Process cell marker channel
-	if(quant_cell | remove_cluster | remove_prot) {
+	if(quant_cell | remove_cluster | remove_signal) {
 		
 		selectWindow("C" + c_marker + "-" + image_title);
 		run("Duplicate...", "title=gaus_marker duplicate");
@@ -391,16 +391,16 @@ for (l = 0; l < lengthOf(file_names); l++) {
 	setThreshold(MinThresh_cluster, MaxThresh_cluster);
 	run("Convert to Mask", "stack");
 
-	// Processing protein channel
-	selectWindow("C" + c_prot + "-" + image_title);
-	run("Duplicate...", "title=dummy_prot duplicate");
-	selectWindow("dummy_prot");
+	// Processing signal channel
+	selectWindow("C" + c_signal + "-" + image_title);
+	run("Duplicate...", "title=dummy_signal duplicate");
+	selectWindow("dummy_signal");
 	
-	// Insert protein channel pre-threshold processing steps
+	// Insert signal channel pre-threshold processing steps
 	run("Smooth", "stack");
-	// End of protein channel pre-threshold processing steps	
+	// End of signal channel pre-threshold processing steps	
 	
-	if(t_prot == "Set per image") {
+	if(t_signal == "Set per image") {
 		
 		min_auto = newArray(nSlices);
 		max_auto = newArray(nSlices);
@@ -417,9 +417,9 @@ for (l = 0; l < lengthOf(file_names); l++) {
 		setThreshold(min_auto, max_auto);
 			
 		run("Threshold...");
-		getThreshold(MinThresh_prot, MaxThresh_prot);
-		waitForUser("Set threshold protein foci per image. \nMove sliders and press OK when set.\n Do NOT press apply on the threshold menu.");
-		getThreshold(MinThresh_prot, MaxThresh_prot);
+		getThreshold(MinThresh_signal, MaxThresh_signal);
+		waitForUser("Set threshold signal foci per image. \nMove sliders and press OK when set.\n Do NOT press apply on the threshold menu.");
+		getThreshold(MinThresh_signal, MaxThresh_signal);
 		selectWindow("Threshold");
 		run("Close");
 	
@@ -440,15 +440,15 @@ for (l = 0; l < lengthOf(file_names); l++) {
 		setThreshold(min_auto, max_auto);
 		
 		run("Threshold...");
-		getThreshold(MinThresh_prot, MaxThresh_prot);
-		waitForUser("Set a fixed threshold for protein foci. \nMove sliders and press OK when set.\n Do NOT press apply on the threshold menu.");
-		getThreshold(MinThresh_prot, MaxThresh_prot);
+		getThreshold(MinThresh_signal, MaxThresh_signal);
+		waitForUser("Set a fixed threshold for signal foci. \nMove sliders and press OK when set.\n Do NOT press apply on the threshold menu.");
+		getThreshold(MinThresh_signal, MaxThresh_signal);
 		selectWindow("Threshold");
 		run("Close");
 		
 	}
 	
-	setThreshold(MinThresh_prot, MaxThresh_prot);
+	setThreshold(MinThresh_signal, MaxThresh_signal);
 	run("Convert to Mask", "stack");
 	
 	// Loop per time frame analzye add and quantify
@@ -459,13 +459,13 @@ for (l = 0; l < lengthOf(file_names); l++) {
 		Stack.setFrame(t);
 		run("Duplicate...", "title=dummy_cluster_t" + t + " duplicate frames=" + t);
 		
-		// Isolate protein foci per frame 
-		selectWindow("dummy_prot");
+		// Isolate signal foci per frame 
+		selectWindow("dummy_signal");
 		Stack.setFrame(t);
-		run("Duplicate...", "title=dummy_prot_t" + t + " duplicate frames=" + t);
+		run("Duplicate...", "title=dummy_signal_t" + t + " duplicate frames=" + t);
 		
-		// Subtract cell marker from cluster and protein channels
-		if(remove_cluster | remove_prot) {
+		// Subtract cell marker from cluster and signal channels
+		if(remove_cluster | remove_signal) {
 			
 			selectWindow("gaus_marker");
 			Stack.setFrame(t);
@@ -496,7 +496,7 @@ for (l = 0; l < lengthOf(file_names); l++) {
 			run("Invert", "stack");
 			
 			if(remove_cluster) imageCalculator("Subtract stack", "dummy_cluster_t" + t, "cell_mask");
-			if(remove_prot)	imageCalculator("Subtract stack", "dummy_prot_t" + t, "cell_mask");
+			if(remove_signal)	imageCalculator("Subtract stack", "dummy_signal_t" + t, "cell_mask");
 			
 			selectWindow("dummy_marker_t" + t);
 			close;
@@ -505,30 +505,30 @@ for (l = 0; l < lengthOf(file_names); l++) {
 		
 		}
 		
-		if((size_prot_px > 0) | quant_prot) {
+		if((size_signal_px > 0) | quant_signal) {
 			
-			selectWindow("dummy_prot_t" + t);
-			run("3D Simple Segmentation", "seeds=None low_threshold=1 min_size=" + size_prot_px + " max_size=-1");
+			selectWindow("dummy_signal_t" + t);
+			run("3D Simple Segmentation", "seeds=None low_threshold=1 min_size=" + size_signal_px + " max_size=-1");
 			
 			selectWindow("Bin");
 			close();
-			selectWindow("dummy_prot_t" + t);
+			selectWindow("dummy_signal_t" + t);
 			close();
 			
 			selectWindow("Seg");
-			rename("dummy_prot_t" + t);	
+			rename("dummy_signal_t" + t);	
 			
-			selectWindow("dummy_prot_t" + t);
-			run("Duplicate...", "title=protein_segmented_t" + t + " duplicate");
+			selectWindow("dummy_signal_t" + t);
+			run("Duplicate...", "title=signal_segmented_t" + t + " duplicate");
 			
-			selectWindow("dummy_prot_t" + t);
+			selectWindow("dummy_signal_t" + t);
 			seg_bit = bitDepth(); 
 			seg_max = pow(2, seg_bit) - 1;
 			setThreshold(1, seg_max);
 			run("Convert to Mask", "stack");
 			
-			if(!quant_prot) {
-				selectWindow("protein_segmented_t" + t);
+			if(!quant_signal) {
+				selectWindow("signal_segmented_t" + t);
 				close();
 			}
 			
@@ -561,24 +561,24 @@ for (l = 0; l < lengthOf(file_names); l++) {
 		selectWindow("Bin");
 		rename("dummy_cluster_t" + t);
 		
-		// Separate protein intensities per frame
-		selectWindow("C" + c_prot + "-" + image_title);
+		// Separate signal intensities per frame
+		selectWindow("C" + c_signal + "-" + image_title);
 		Stack.setFrame(t);
-		run("Duplicate...", "title=protein_intensities_t" + t + " duplicate frames=" + t);
+		run("Duplicate...", "title=signal_intensities_t" + t + " duplicate frames=" + t);
 		
-		// Demonstrate protein measurements within cluster ROIs
+		// Demonstrate signal measurements within cluster ROIs
 		if(guide_check & (l == 0) & (t == 1)) {
 			
-			selectWindow("protein_intensities_t" + t);
+			selectWindow("signal_intensities_t" + t);
 			Ext.Manager3D_Select(0);
-			waitForUser("Example of protein intensities measured by cluster ROIs. \nTurn off Live ROI and deselect before you continue. \nPress OK to continue.");
+			waitForUser("Example of signal intensities measured by cluster ROIs. \nTurn off Live ROI and deselect before you continue. \nPress OK to continue.");
 			
 		}
 		
-		// Summarize cluster and protein content
+		// Summarize cluster and signal content
 		if(n_cluster > 0) {
 			
-			selectWindow("protein_intensities_t" + t);
+			selectWindow("signal_intensities_t" + t);
 			
 			for (b = 0; b < n_cluster; b++) {
 				
@@ -606,20 +606,20 @@ for (l = 0; l < lengthOf(file_names); l++) {
 				obj_ind = obj_ind + 1;
 			}
 			
-			// Calculate protein fraction per cluster
-			selectWindow("dummy_prot_t" + t);
+			// Calculate signal fraction per cluster
+			selectWindow("dummy_signal_t" + t);
 			
 			for (b = 0; b < n_cluster; b++) {
 			
-				Ext.Manager3D_Quantif3D(b, "Mean", prot_frac_bit);
-				prot_frac = (prot_frac_bit / max_greyval);
+				Ext.Manager3D_Quantif3D(b, "Mean", signal_frac_bit);
+				signal_frac = (signal_frac_bit / max_greyval);
 				
-				Table.set("FractionProtein", obj_ind_frac, prot_frac);
+				Table.set("FractionSignal", obj_ind_frac, signal_frac);
 				Table.set("FractionCluster", obj_ind_frac, 1);
 				Table.set("MinThreshObject", obj_ind_frac, MinThresh_cluster);
 				Table.set("MaxThreshObject", obj_ind_frac, MaxThresh_cluster);
-				Table.set("MinThreshProtein", obj_ind_frac, MinThresh_prot);
-				Table.set("MaxThreshProtein", obj_ind_frac, MaxThresh_prot);
+				Table.set("MinThreshSignal", obj_ind_frac, MinThresh_signal);
+				Table.set("MaxThreshSignal", obj_ind_frac, MaxThresh_signal);
 				
 				obj_ind_frac = obj_ind_frac + 1;
 			}
@@ -675,10 +675,10 @@ for (l = 0; l < lengthOf(file_names); l++) {
 			
 			}		
 			
-			// Summarize cell and protein content
+			// Summarize cell and signal content
 			if(n_cell > 0) {
 				
-				selectWindow("protein_intensities_t" + t);
+				selectWindow("signal_intensities_t" + t);
 				
 				for (b = 0; b < n_cell; b++) {
 					
@@ -706,19 +706,19 @@ for (l = 0; l < lengthOf(file_names); l++) {
 					obj_ind = obj_ind + 1;
 				}
 				
-				// Calculate protein fraction per cell
-				selectWindow("dummy_prot_t" + t);
+				// Calculate signal fraction per cell
+				selectWindow("dummy_signal_t" + t);
 				
 				for (b = 0; b < n_cell; b++) {
 				
-					Ext.Manager3D_Quantif3D(b, "Mean", prot_frac_bit);
-					prot_frac = (prot_frac_bit / max_greyval);
+					Ext.Manager3D_Quantif3D(b, "Mean", signal_frac_bit);
+					signal_frac = (signal_frac_bit / max_greyval);
 					
-					Table.set("FractionProtein", obj_ind_frac, prot_frac);
+					Table.set("FractionSignal", obj_ind_frac, signal_frac);
 					Table.set("MinThreshObject", obj_ind_frac, MinThresh_marker);
 					Table.set("MaxThreshObject", obj_ind_frac, MaxThresh_marker);
-					Table.set("MinThreshProtein", obj_ind_frac, MinThresh_prot);
-					Table.set("MaxThreshProtein", obj_ind_frac, MaxThresh_prot);
+					Table.set("MinThreshSignal", obj_ind_frac, MinThresh_signal);
+					Table.set("MaxThreshSignal", obj_ind_frac, MaxThresh_signal);
 					
 					obj_ind_frac = obj_ind_frac + 1;
 				
@@ -778,7 +778,7 @@ for (l = 0; l < lengthOf(file_names); l++) {
 			
 			if(n_nucl > 0) {
 
-				selectWindow("protein_intensities_t" + t);
+				selectWindow("signal_intensities_t" + t);
 				
 				for (b = 0; b < n_nucl; b++) {
 					
@@ -806,19 +806,19 @@ for (l = 0; l < lengthOf(file_names); l++) {
 					obj_ind = obj_ind + 1;
 				}
 				
-				// Calculate protein fraction per nuclei
-				selectWindow("dummy_prot_t" + t);
+				// Calculate signal fraction per nuclei
+				selectWindow("dummy_signal_t" + t);
 				
 				for (b = 0; b < n_nucl; b++) {
 				
-					Ext.Manager3D_Quantif3D(b, "Mean", prot_frac_bit);
-					prot_frac = (prot_frac_bit / max_greyval);
+					Ext.Manager3D_Quantif3D(b, "Mean", signal_frac_bit);
+					signal_frac = (signal_frac_bit / max_greyval);
 					
-					Table.set("FractionProtein", obj_ind_frac, prot_frac);
+					Table.set("FractionSignal", obj_ind_frac, signal_frac);
 					Table.set("MinThreshObject", obj_ind_frac, MinThresh_nucl);
 					Table.set("MaxThreshObject", obj_ind_frac, MaxThresh_nucl);
-					Table.set("MinThreshProtein", obj_ind_frac, MinThresh_prot);
-					Table.set("MaxThreshProtein", obj_ind_frac, MaxThresh_prot);
+					Table.set("MinThreshSignal", obj_ind_frac, MinThresh_signal);
+					Table.set("MaxThreshSignal", obj_ind_frac, MaxThresh_signal);
 					
 					obj_ind_frac = obj_ind_frac + 1;
 				
@@ -850,7 +850,7 @@ for (l = 0; l < lengthOf(file_names); l++) {
 						
 					if(n_voronoi > 0) {
 						
-						selectWindow("protein_intensities_t" + t);
+						selectWindow("signal_intensities_t" + t);
 						
 						for (b = 0; b < n_voronoi; b++) {
 							
@@ -878,19 +878,19 @@ for (l = 0; l < lengthOf(file_names); l++) {
 							obj_ind = obj_ind + 1;
 						}
 						
-						// Calculate protein fraction per voronoi
-						selectWindow("dummy_prot_t" + t);
+						// Calculate signal fraction per voronoi
+						selectWindow("dummy_signal_t" + t);
 						
 						for (b = 0; b < n_voronoi; b++) {
 						
-							Ext.Manager3D_Quantif3D(b, "Mean", prot_frac_bit);
-							prot_frac = (prot_frac_bit / max_greyval);
+							Ext.Manager3D_Quantif3D(b, "Mean", signal_frac_bit);
+							signal_frac = (signal_frac_bit / max_greyval);
 							
-							Table.set("FractionProtein", obj_ind_frac, prot_frac);
+							Table.set("FractionSignal", obj_ind_frac, signal_frac);
 							Table.set("MinThreshObject", obj_ind_frac, MinThresh_nucl);
 							Table.set("MaxThreshObject", obj_ind_frac, MaxThresh_nucl);
-							Table.set("MinThreshProtein", obj_ind_frac, MinThresh_prot);
-							Table.set("MaxThreshProtein", obj_ind_frac, MaxThresh_prot);
+							Table.set("MinThreshSignal", obj_ind_frac, MinThresh_signal);
+							Table.set("MaxThreshSignal", obj_ind_frac, MaxThresh_signal);
 							
 							obj_ind_frac = obj_ind_frac + 1;
 						
@@ -928,52 +928,52 @@ for (l = 0; l < lengthOf(file_names); l++) {
 			
 		}
 		
-		if(quant_prot) {
+		if(quant_signal) {
 			
-			selectWindow("protein_segmented_t" + t);
+			selectWindow("signal_segmented_t" + t);
 			Ext.Manager3D_AddImage();
-			Ext.Manager3D_Count(n_prot);
+			Ext.Manager3D_Count(n_signal);
 			
-			if(n_prot > 0) {
+			if(n_signal > 0) {
 				
-				selectWindow("protein_intensities_t" + t);
+				selectWindow("signal_intensities_t" + t);
 
-				for (b = 0; b < n_prot; b++) {
+				for (b = 0; b < n_signal; b++) {
 					
-					Ext.Manager3D_Measure3D(b, "Vol", prot_vol);
-					Ext.Manager3D_Quantif3D(b, "Mean", prot_mean);
-					Ext.Manager3D_Quantif3D(b, "IntDen", prot_intden);
-					Ext.Manager3D_Quantif3D(b, "Min", prot_min);
-					Ext.Manager3D_Quantif3D(b, "Max", prot_max);
-					Ext.Manager3D_Quantif3D(b, "Sigma", prot_sd);
-					Ext.Manager3D_Centroid3D(b, prot_x, prot_y, prot_z);
+					Ext.Manager3D_Measure3D(b, "Vol", signal_vol);
+					Ext.Manager3D_Quantif3D(b, "Mean", signal_mean);
+					Ext.Manager3D_Quantif3D(b, "IntDen", signal_intden);
+					Ext.Manager3D_Quantif3D(b, "Min", signal_min);
+					Ext.Manager3D_Quantif3D(b, "Max", signal_max);
+					Ext.Manager3D_Quantif3D(b, "Sigma", signal_sd);
+					Ext.Manager3D_Centroid3D(b, signal_x, signal_y, signal_z);
 					
 					Table.set("Label", obj_ind, image_title);
-					Table.set("Object", obj_ind, "Protein");
-					Table.set("Volume", obj_ind, prot_vol);
-					Table.set("X", obj_ind, prot_x);
-					Table.set("Y", obj_ind, prot_y);
-					Table.set("Z", obj_ind, prot_z);
+					Table.set("Object", obj_ind, "Signal");
+					Table.set("Volume", obj_ind, signal_vol);
+					Table.set("X", obj_ind, signal_x);
+					Table.set("Y", obj_ind, signal_y);
+					Table.set("Z", obj_ind, signal_z);
 					Table.set("T", obj_ind, t);
-					Table.set("Mean", obj_ind, prot_mean);
-					Table.set("IntDen", obj_ind, prot_intden);
-					Table.set("Min", obj_ind, prot_min);
-					Table.set("Max", obj_ind, prot_max);
-					Table.set("Sigma", obj_ind, prot_sd);
+					Table.set("Mean", obj_ind, signal_mean);
+					Table.set("IntDen", obj_ind, signal_intden);
+					Table.set("Min", obj_ind, signal_min);
+					Table.set("Max", obj_ind, signal_max);
+					Table.set("Sigma", obj_ind, signal_sd);
 					
-					Table.set("FractionProtein", obj_ind, 1);
-					Table.set("MinThreshObject", obj_ind, MinThresh_prot);
-					Table.set("MaxThreshObject", obj_ind, MaxThresh_prot);
-					Table.set("MinThreshProtein", obj_ind, MinThresh_prot);
-					Table.set("MaxThreshProtein", obj_ind, MaxThresh_prot);
+					Table.set("FractionSignal", obj_ind, 1);
+					Table.set("MinThreshObject", obj_ind, MinThresh_signal);
+					Table.set("MaxThreshObject", obj_ind, MaxThresh_signal);
+					Table.set("MinThreshSignal", obj_ind, MinThresh_signal);
+					Table.set("MaxThreshSignal", obj_ind, MaxThresh_signal);
 					
 					obj_ind = obj_ind + 1;
 				}
 				
-				// Calculate cluster fraction per protein focus
+				// Calculate cluster fraction per signal focus
 				selectWindow("dummy_cluster_t" + t);
 				
-				for (b = 0; b < n_prot; b++) {
+				for (b = 0; b < n_signal; b++) {
 				
 					Ext.Manager3D_Quantif3D(b, "Mean", cluster_frac_bit);
 					cluster_frac = (cluster_frac_bit / max_greyval);
@@ -985,7 +985,7 @@ for (l = 0; l < lengthOf(file_names); l++) {
 
 			}
 			
-			selectWindow("protein_segmented_t" + t);
+			selectWindow("signal_segmented_t" + t);
 			close();
 			
 			Ext.Manager3D_Reset();
@@ -996,10 +996,10 @@ for (l = 0; l < lengthOf(file_names); l++) {
 		selectWindow("dummy_cluster_t" + t);
 		close();
 		
-		selectWindow("dummy_prot_t" + t);
+		selectWindow("dummy_signal_t" + t);
 		close();
 		
-		selectWindow("protein_intensities_t" + t);
+		selectWindow("signal_intensities_t" + t);
 		close();
 		
 	}
@@ -1010,7 +1010,7 @@ for (l = 0; l < lengthOf(file_names); l++) {
 		close();
 	}
 
-	if(quant_cell | remove_cluster | remove_prot) {
+	if(quant_cell | remove_cluster | remove_signal) {
 		selectWindow("gaus_marker");
 		close;
 		selectWindow("dummy_marker");
@@ -1027,7 +1027,7 @@ for (l = 0; l < lengthOf(file_names); l++) {
 	
 	selectWindow("dummy_cluster");
 	close;
-	selectWindow("dummy_prot");
+	selectWindow("dummy_signal");
 	close;
 }
 
